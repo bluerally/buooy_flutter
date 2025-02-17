@@ -1,14 +1,12 @@
-enum Environment { dev, staging, prod }
+enum Environment { local, prod }
 
 class AppConfig {
-  static Environment environment = Environment.dev;
+  static Environment environment = Environment.local;
 
   static String get apiBaseUrl {
     switch (environment) {
-      case Environment.dev:
-        return 'https://dev.3.36.234.165.nip.io/api';
-      case Environment.staging:
-        return 'https://staging.3.36.234.165.nip.io/api';
+      case Environment.local:
+        return 'http://localhost:8000/api';
       case Environment.prod:
         return 'https://3.36.234.165.nip.io/api';
     }

@@ -28,7 +28,8 @@ class PartyService {
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final List<dynamic> jsonList = json.decode(decodedBody);
         return jsonList.map((json) => PartyListDetail.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load party list: ${response.statusCode}');

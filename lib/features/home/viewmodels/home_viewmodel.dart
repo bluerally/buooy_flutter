@@ -31,7 +31,7 @@ class HomeViewModel extends ChangeNotifier {
         currentPage++;
       }
     } catch (e) {
-      // Handle error
+      throw Exception('Failed to load party list: $e');
     } finally {
       isLoading = false;
       notifyListeners();
