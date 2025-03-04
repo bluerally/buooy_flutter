@@ -18,12 +18,7 @@ class CustomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.group_outlined),
           activeIcon: Icon(Icons.group),
-          label: '모임',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.forum_outlined),
-          activeIcon: Icon(Icons.forum),
-          label: '커뮤니티',
+          label: '모임 만들기',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),

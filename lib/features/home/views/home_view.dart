@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/navigation_bar.dart';
 import '../viewmodels/home_viewmodel.dart';
+import './create_party.dart';
 import 'widgets/party_card.dart';
 
 class HomeView extends StatefulWidget {
@@ -72,7 +73,10 @@ class _HomeViewState extends State<HomeView> {
       bottomNavigationBar: const CustomNavigationBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: 모임 개설 페이지로 이동
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateGatheringScreen()),
+          );
         },
         backgroundColor: const Color(0xFF4B3FD8),
         child: const Icon(Icons.add, color: Colors.white),

@@ -5,7 +5,7 @@ import '../../models/party_model.dart';
 class PartyCard extends StatelessWidget {
   final PartyListDetail party;
 
-  const PartyCard({Key? key, required this.party}) : super(key: key);
+  const PartyCard({super.key, required this.party});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,8 @@ class PartyCard extends StatelessWidget {
     DateTime? gatherDateTime;
     try {
       // 예: "2024-02-03T08:00" 형태로 만들어 파싱
-      gatherDateTime = DateTime.parse('${party.gatherDate}T${party.gatherTime}');
+      gatherDateTime =
+          DateTime.parse('${party.gatherDate}T${party.gatherTime}');
     } catch (_) {
       // 파싱 실패 시 null
     }
@@ -35,7 +36,8 @@ class PartyCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(4),
@@ -105,10 +107,11 @@ class PartyCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: (party.organizerProfile.profileImage != null &&
-                          party.organizerProfile.profileImage!.isNotEmpty)
-                      ? NetworkImage(party.organizerProfile.profileImage!)
-                      : null,
+                  backgroundImage:
+                      (party.organizerProfile.profileImage != null &&
+                              party.organizerProfile.profileImage!.isNotEmpty)
+                          ? NetworkImage(party.organizerProfile.profileImage!)
+                          : null,
                   radius: 16,
                 ),
                 const SizedBox(width: 8),
