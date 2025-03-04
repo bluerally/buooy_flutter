@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75312656911",
+    "project_id": "buooy-5d81f",
+    "storage_bucket": "buooy-5d81f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75312656911:android:1f727d0d0217963e01a97a",
+        "android_client_info": {
+          "package_name": "com.example.buooy_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfVSIFepGnDE6Ar2yvXnIy0_DCGhvfZ4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -10,12 +10,12 @@ class UserSimpleProfile {
   });
 
   factory UserSimpleProfile.fromJson(Map<String, dynamic> json) {
-  return UserSimpleProfile(
-    id: json['user_id'],            // 백엔드: user_id
-    nickname: json['name'],         // 백엔드: name
-    profileImage: json['profile_picture'], // 백엔드: profile_picture
-  );
-}
+    return UserSimpleProfile(
+      id: json['user_id'], // 백엔드: user_id
+      nickname: json['name'], // 백엔드: name
+      profileImage: json['profile_picture'], // 백엔드: profile_picture
+    );
+  }
 }
 
 class PartyListDetail {

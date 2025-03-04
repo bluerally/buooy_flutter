@@ -1,13 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'app/app.dart';
-import 'features/home/viewmodels/home_viewmodel.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+import 'app/app.dart';
+import 'core/constants/api_constants.dart';
+import 'features/home/viewmodels/home_viewmodel.dart';
+import 'features/auth/viewmodels/auth_viewmodel.dart';
+
+void main() async {
+  // Flutter 엔진 초기화 보장
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase 초기화
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 카카오 SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: ApiConstants.kakaoNativeAppKey,
+  );
+
+  // 네이버 SDK 초기화 - 설정값 등록만 하고 로그인은 안함
+  await FlutterNaverLogin.logOut();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
       ],
       child: const BuooyApp(),
     ),
