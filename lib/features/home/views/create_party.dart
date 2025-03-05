@@ -24,35 +24,26 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
   String address = '';
   String placeName = '';
   String notice = '';
-  List<dynamic> sports = [];
 
   // 인원수 리스트 생성 (2명부터 30명까지)
   final List<Map<String, dynamic>> PARTICIPANT_COUNT =
       List.generate(29, (i) => {'value': i + 2, 'title': '${i + 2}명'});
 
+  List<String> _generateTimeList() {
+    List<String> times = [];
+    for (int hour = 8; hour < 24; hour++) {
+      for (int minute = 0; minute < 60; minute += 30) {
+        String formattedHour = hour.toString().padLeft(2, '0');
+        String formattedMinute = minute.toString().padLeft(2, '0');
+        times.add('$formattedHour:$formattedMinute');
+      }
+    }
+    return times;
+  }
+
   @override
   void initState() {
     super.initState();
-    fetchSports();
-  }
-
-  Future<void> fetchSports() async {
-    final uri = Uri.parse(AppConfig.sportsListEndpoint);
-
-    try {
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        final decodedBody = utf8.decode(response.bodyBytes);
-        final List<dynamic> data = json.decode(decodedBody);
-
-        setState(() {
-          sports = data.map((json) => Sport.fromJson(json)).toList();
-        });
-      }
-    } catch (e) {
-      print('Failed to load sports: $e');
-    }
   }
 
   @override
@@ -76,9 +67,9 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
               _buildSectionTitle('스포츠'),
               Wrap(
                 spacing: 8.0,
-                children: sports.map((sport) {
+                children: ['프리다이빙', '스쿠버다이빙', '수영', '서핑'].map((sport) {
                   return ChoiceChip(
-                    label: Text(sport.name),
+                    label: Text(sport),
                     selected: selectedSport == sport,
                     onSelected: (selected) {
                       setState(() {
@@ -120,7 +111,7 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                     selectedTime = value;
                   });
                 },
-                items: ['10:00', '11:00'].map((time) {
+                items: _generateTimeList().map((time) {
                   return DropdownMenuItem(
                     value: time,
                     child: Text(time),
@@ -129,20 +120,25 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
               ),
               SizedBox(height: 16),
               _buildSectionTitle('참여 인원수'),
-              Wrap(
-                spacing: 8.0,
-                children: PARTICIPANT_COUNT.map((participant) {
-                  return ChoiceChip(
-                    label: Text(participant['title']),
-                    selected: selectedParticipant == participant['value'],
-                    onSelected: (selected) {
-                      setState(() {
-                        selectedParticipant =
-                            selected ? participant['value'] : null;
-                      });
-                    },
-                  );
-                }).toList(),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal, // 가로 스크롤 활성화
+                child: Row(
+                  children: PARTICIPANT_COUNT.map((participant) {
+                    return Padding(
+                      padding: EdgeInsets.only(right: 8.0), // 간격 조정
+                      child: ChoiceChip(
+                        label: Text(participant['title']),
+                        selected: selectedParticipant == participant['value'],
+                        onSelected: (selected) {
+                          setState(() {
+                            selectedParticipant =
+                                selected ? participant['value'] : null;
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
               SizedBox(height: 16),
               _buildSectionTitle('제목'),
