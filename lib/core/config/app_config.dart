@@ -21,6 +21,9 @@ class AppConfig {
   static String get sportsListEndpoint =>
       'https://3.36.234.165.nip.io/api/party/sports';
 
+  static String get createPartyEndpoint =>
+      'https://3.36.234.165.nip.io/api/party';
+
   // 다른 API 엔드포인트들도 여기에 추가할 수 있습니다.
   // static String get userProfileEndpoint => '$apiBaseUrl/user/profile';
   // static String get authEndpoint => '$apiBaseUrl/auth';

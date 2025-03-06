@@ -66,6 +66,7 @@ class _SearchAddressModalState extends State<SearchAddressModal> {
                 onPressed: _searchAddress,
               ),
             ),
+            onSubmitted: (_) => _searchAddress(),
           ),
 
           const SizedBox(height: 16),

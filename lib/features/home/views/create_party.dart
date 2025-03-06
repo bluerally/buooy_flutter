@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../../core/config/app_config.dart';
-import '../models/sports_model.dart';
 import './widgets/search_address_modal.dart';
 
 class CreateGatheringScreen extends StatefulWidget {
@@ -18,12 +17,19 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
   final _formKey = GlobalKey<FormState>(); // FormKey 추가
   DateTime? selectedDate;
   String? selectedTime;
-  String selectedSport = '프리다이빙'; // 기본값 설정
+  Map<String, dynamic> selectedSport = {'id': 1, 'name': '프리다이빙'};
   String selectedAddress = "";
-  int selectedParticipantCount = 2; // 기본값 설정
+  int selectedParticipantCount = 2;
   String title = '';
   String description = '';
   String notice = '';
+
+  final List<Map<String, dynamic>> SPORTS = [
+    {"id": 1, "name": "프리다이빙"},
+    {"id": 2, "name": "스쿠버다이빙"},
+    {"id": 3, "name": "서핑"},
+    {"id": 4, "name": "수영"},
+  ];
 
   final List<Map<String, dynamic>> PARTICIPANT_COUNT =
       List.generate(29, (i) => {'value': i + 2, 'title': '${i + 2}명'});
@@ -121,11 +127,56 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
     }
   }
 
+  Future<void> _createParty() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(AppConfig.createPartyEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'title': title,
+          'body': description,
+          'gather_date': DateFormat('yyyy-MM-dd').format(selectedDate!),
+          'gather_time': selectedTime,
+          'address': selectedAddress,
+          'participant_limit': selectedParticipantCount,
+          'sport_id': selectedSport['id'],
+          'notice': notice,
+        }),
+      );
+
+      print(response.statusCode);
+
+      if (response.statusCode == 201) {
+        // 성공적으로 생성됨
+        Navigator.pop(context); // 이전 화면으로 돌아가기
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임이 성공적으로 생성되었습니다.')),
+        );
+      } else {
+        // 에러 처리
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임 생성에 실패했습니다. 다시 시도해주세요.')),
+        );
+      }
+    } catch (e) {
+      // 네트워크 에러 등 예외 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('오류가 발생했습니다. 다시 시도해주세요.')),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    selectedSport = '프리다이빙'; // 기본값 설정
-    selectedParticipantCount = 2; // 기본값 설정
+    selectedSport = SPORTS[0];
+    selectedParticipantCount = 2;
   }
 
   @override
@@ -151,19 +202,19 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
               children: [
                 _buildSectionTitle('스포츠'),
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal, // 가로 스크롤 활성화
+                  scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: ['프리다이빙', '스쿠버다이빙', '수영', '서핑'].map((sport) {
+                    children: SPORTS.map((sport) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4.0), // 간격 추가
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: ChoiceChip(
-                          label: Text(sport),
-                          selected: selectedSport == sport,
+                          label: Text(sport['name']),
+                          selected: selectedSport['id'] == sport['id'],
                           onSelected: (selected) {
                             setState(() {
-                              selectedSport = selected ? sport : '프리다이빙';
+                              selectedSport = selected ? sport : SPORTS[0];
                             });
+                            print(selectedSport);
                           },
                         ),
                       );
@@ -278,7 +329,9 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                 _buildSectionTitle('내용'),
                 TextFormField(
                   maxLines: 4,
-                  decoration: InputDecoration(hintText: '내용을 입력해주세요'),
+                  decoration: InputDecoration(
+                      hintText:
+                          '프리다이빙 경력, 선호하는 다이빙 스팟, 보유한 장비, 관심 있는 기술 등을 알려주세요.'),
                   onChanged: (value) {
                     setState(() {
                       description = value;
@@ -302,10 +355,12 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                   onTap: () => _showLocationPickerModal(context),
                 ),
                 SizedBox(height: 16),
-                _buildSectionTitle('추가 정보'),
+                _buildSectionTitle('추가정보'),
                 TextField(
                   maxLines: 3,
-                  decoration: InputDecoration(hintText: '추가 정보를 입력해주세요'),
+                  decoration: InputDecoration(
+                      hintText:
+                          '해당 정보는 모임을 신청한 멤버에게만 공개됩니다. 연락처, 오픈카톡 링크, 금액 등을 입력할 수 있어요.'),
                   onChanged: (value) {
                     setState(() {
                       notice = value;
@@ -322,7 +377,7 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
         child: ElevatedButton(
           onPressed: () {
             if (_formKey.currentState?.validate() ?? false) {
-              // 게시하기 로직
+              _createParty();
             }
           },
           child: Text('게시하기'),

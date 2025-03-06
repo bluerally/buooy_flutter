@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 class KakaoLocationService {
   static const String baseUrl =
       "https://dapi.kakao.com/v2/local/search/keyword.json";
-  static const String apiKey = "579d9cad96a609dbe9b1c3711ebd7b67";
+  static const String apiKey = "5837f6242278d23d1a3455c5dea2a1ab";
 
   static Future<List<Map<String, dynamic>>> getAddress(String query) async {
-    final response = await http.get(
+    http.Response response = await http.get(
       Uri.parse("$baseUrl?query=$query"),
       headers: {"Authorization": "KakaoAK $apiKey"},
     );
