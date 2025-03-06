@@ -23,6 +23,7 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
   String title = '';
   String description = '';
   String notice = '';
+  bool _submitted = false;
 
   final List<Map<String, dynamic>> SPORTS = [
     {"id": 1, "name": "프리다이빙"},
@@ -128,7 +129,24 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
   }
 
   Future<void> _createParty() async {
+    setState(() {
+      _submitted = true; // 게시하기 버튼 클릭 시 submitted 상태를 true로 설정
+    });
+
     if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
+
+    // 추가 필드 검증
+    if (selectedDate == null ||
+        selectedTime == null ||
+        selectedAddress.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('모든 필수 항목을 입력해주세요.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -149,8 +167,6 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
           'notice': notice,
         }),
       );
-
-      print(response.statusCode);
 
       if (response.statusCode == 201) {
         // 성공적으로 생성됨
@@ -223,67 +239,79 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                 ),
                 SizedBox(height: 16),
                 _buildSectionTitle('모임 날짜'),
-                ListTile(
-                  title: Text(selectedDate != null
-                      ? DateFormat('yyyy-MM-dd').format(selectedDate!)
-                      : '날짜 선택'),
-                  trailing: Icon(Icons.calendar_today),
+                TextFormField(
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: '날짜 선택',
+                    errorText: _submitted && selectedDate == null
+                        ? '모임 날짜를 선택해주세요'
+                        : null,
+                  ),
                   onTap: () async {
-                    DateTime? picked = await showDatePicker(
+                    DateTime? pickedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
+                      firstDate: DateTime.now(),
                       lastDate: DateTime(2030),
                     );
-                    if (picked != null && picked != selectedDate) {
+                    if (pickedDate != null) {
                       setState(() {
-                        selectedDate = picked;
+                        selectedDate = pickedDate;
                       });
                     }
                   },
-                ),
-                // 유효성 검사 추가
-                TextFormField(
-                  initialValue: selectedDate != null
-                      ? DateFormat('yyyy-MM-dd').format(selectedDate!)
-                      : '',
                   validator: (value) {
-                    if (selectedDate == null) {
+                    if (value == null || value.isEmpty) {
                       return '필수 입력 항목입니다';
                     }
                     return null;
                   },
-                  style: TextStyle(color: Colors.transparent),
+                  controller: TextEditingController(
+                    text: selectedDate != null
+                        ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                        : '',
+                  ),
                 ),
                 SizedBox(height: 16),
                 _buildSectionTitle('모임 시작 시간'),
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedTime,
-                  hint: Text('00:00'),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedTime = value;
-                    });
-                  },
-                  items: _generateTimeList().map((time) {
-                    return DropdownMenuItem(
-                      value: time,
-                      child: Text(time),
-                    );
-                  }).toList(),
-                ),
-                // 유효성 검사 추가
                 TextFormField(
-                  initialValue: selectedTime ?? '',
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: selectedTime ?? '',
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '시간 선택',
+                    suffixIcon: Icon(Icons.access_time),
+                  ),
+                  onTap: () async {
+                    TimeOfDay? picked = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay(hour: 12, minute: 0),
+                      builder: (BuildContext context, Widget? child) {
+                        return MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            alwaysUse24HourFormat: true,
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+
+                    if (picked != null) {
+                      setState(() {
+                        selectedTime =
+                            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                      });
+                    }
+                  },
                   validator: (value) {
-                    if (selectedTime == null) {
-                      return '필수 입력 항목입니다';
+                    if (value == null || value.isEmpty) {
+                      return '모임 시간을 선택해주세요';
                     }
                     return null;
                   },
-                  style: TextStyle(color: Colors.transparent),
                 ),
+                // 유효성 검사 추가
                 SizedBox(height: 16),
                 _buildSectionTitle('참여 인원수'),
                 SingleChildScrollView(
@@ -309,6 +337,7 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                 ),
                 SizedBox(height: 16),
                 _buildSectionTitle('제목'),
+
                 TextFormField(
                   decoration: InputDecoration(hintText: '제목을 입력해주세요'),
                   onChanged: (value) {
@@ -348,11 +377,22 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
                 ),
                 SizedBox(height: 16),
                 _buildSectionTitle('장소'),
-                ListTile(
-                  title: Text(
-                      selectedAddress.isNotEmpty ? selectedAddress : '장소 선택'),
-                  trailing: Icon(Icons.location_on),
+                TextFormField(
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: selectedAddress,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '장소 선택',
+                    suffixIcon: Icon(Icons.location_on),
+                  ),
                   onTap: () => _showLocationPickerModal(context),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '모임 장소를 선택해주세요';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 16),
                 _buildSectionTitle('추가정보'),
