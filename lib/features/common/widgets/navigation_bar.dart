@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../home/views/create_party.dart';
+import '../../home/views/home_view.dart';
+
 class CustomNavigationBar extends StatelessWidget {
   const CustomNavigationBar({super.key});
 
@@ -9,6 +12,23 @@ class CustomNavigationBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       selectedItemColor: const Color(0xFF4B3FD8),
       unselectedItemColor: Colors.grey,
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeView()),
+            );
+          case 1:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateGatheringScreen()),
+            );
+          case 2:
+            // 마이페이지 
+            break;
+        }
+      },
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
