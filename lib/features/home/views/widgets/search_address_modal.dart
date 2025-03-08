@@ -19,7 +19,7 @@ class _SearchAddressModalState extends State<SearchAddressModal> {
     setState(() => _isLoading = true);
     try {
       final results =
-          await KakaoLocationService.getAddress(_searchController.text);
+          await KakaoLocationService.getLocation(_searchController.text);
       setState(() => _addressList = results);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

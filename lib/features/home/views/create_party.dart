@@ -35,18 +35,6 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
   final List<Map<String, dynamic>> PARTICIPANT_COUNT =
       List.generate(29, (i) => {'value': i + 2, 'title': '${i + 2}명'});
 
-  List<String> _generateTimeList() {
-    List<String> times = [];
-    for (int hour = 8; hour < 24; hour++) {
-      for (int minute = 0; minute < 60; minute += 30) {
-        String formattedHour = hour.toString().padLeft(2, '0');
-        String formattedMinute = minute.toString().padLeft(2, '0');
-        times.add('$formattedHour:$formattedMinute');
-      }
-    }
-    return times;
-  }
-
   void _showLocationPickerModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -168,20 +156,17 @@ class _CreateGatheringScreenState extends State<CreateGatheringScreen> {
         }),
       );
 
-      if (response.statusCode == 201) {
-        // 성공적으로 생성됨
-        Navigator.pop(context); // 이전 화면으로 돌아가기
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임이 성공적으로 생성되었습니다.')),
         );
       } else {
-        // 에러 처리
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임 생성에 실패했습니다. 다시 시도해주세요.')),
         );
       }
     } catch (e) {
-      // 네트워크 에러 등 예외 처리
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('오류가 발생했습니다. 다시 시도해주세요.')),
       );
